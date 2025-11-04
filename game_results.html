@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Results - Rock Paper Scissors</title>
+   <link rel="stylesheet" href="css/main.css" />
+   <link rel="icon" type="image/png" href="public/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2F3drockpa8035back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"></script>
+</head>
+<body class="min-h-screen bg-background overflow-x-hidden">
+    <!-- Background with 3D Effects -->
+    <div class="fixed inset-0 bg-gradient-to-br from-slate-900 via-indigo-900/20 to-violet-900/30" id="backgroundContainer">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2825&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"></div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl animate-float"></div>
+        <div class="absolute bottom-32 right-16 w-24 h-24 bg-secondary/10 rounded-full blur-lg animate-float" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-accent/10 rounded-full blur-md animate-float" style="animation-delay: 2s;"></div>
+        
+        <!-- Victory/Defeat Particles -->
+        <div id="particleContainer" class="absolute inset-0 pointer-events-none"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="relative z-10 bg-surface/80 backdrop-blur-md border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-gaming rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">3D</span>
+                        </div>
+                        <h1 class="text-xl font-bold text-text-primary">Rock Paper Scissors</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="game_arena.html" class="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary-300 rounded-lg transition-all duration-200 hover:scale-105">
+                        Back to Game
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Results Content -->
+    <main class="relative z-10 min-h-screen pt-8 pb-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Results Title -->
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold text-text-primary mb-4 text-shadow-md" id="resultsTitle">
+                    Game Results
+                </h2>
+                <p class="text-text-secondary text-lg" id="resultsSubtitle">Match completed successfully!</p>
+            </div>
+
+            <!-- Main Result Display -->
+            <div class="bg-surface/60 backdrop-blur-md rounded-3xl border border-slate-600/50 p-8 mb-12 shadow-3d" id="mainResultCard">
+                <div class="text-center space-y-8">
+                    
+                    <!-- Winner Announcement -->
+                    <div class="space-y-4">
+                        <div class="text-6xl md:text-8xl font-bold mb-4 transition-all duration-1000" id="winnerText">
+                            🎉 Victory!
+                        </div>
+                        <div class="text-2xl md:text-3xl font-semibold text-text-primary" id="winnerMessage">
+                            Congratulations! You Won the Match!
+                        </div>
+                    </div>
+
+                    <!-- Final Score Display -->
+                    <div class="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+                        <div class="text-center space-y-2">
+                            <h3 class="text-text-secondary text-sm font-medium uppercase tracking-wide">Player</h3>
+                            <div class="text-4xl md:text-5xl font-bold text-primary transition-all duration-1000" id="finalPlayerScore">3</div>
+                        </div>
+                        <div class="text-center space-y-2">
+                            <h3 class="text-text-secondary text-sm font-medium uppercase tracking-wide">VS</h3>
+                            <div class="text-2xl font-bold text-accent">⚔️</div>
+                        </div>
+                        <div class="text-center space-y-2">
+                            <h3 class="text-text-secondary text-sm font-medium uppercase tracking-wide">Computer</h3>
+                            <div class="text-4xl md:text-5xl font-bold text-secondary transition-all duration-1000" id="finalComputerScore">1</div>
+                        </div>
+                    </div>
+
+                    <!-- Winning Choice Display -->
+                    <div class="relative perspective-1000">
+                        <div class="w-32 h-32 mx-auto bg-surface/80 backdrop-blur-md rounded-3xl border border-slate-600/50 flex items-center justify-center preserve-3d transition-all duration-1000 shadow-3d celebrate" id="winningChoiceDisplay">
+                            <div class="text-6xl" id="winningChoiceIcon">🪨</div>
+                        </div>
+                        <div class="absolute -inset-4 bg-primary/30 rounded-3xl blur-xl opacity-100 transition-opacity duration-500" id="winningChoiceGlow"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Statistics -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                
+                <!-- Performance Stats -->
+                <div class="bg-surface/60 backdrop-blur-md rounded-2xl border border-slate-600/50 p-6 shadow-3d">
+                    <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center">
+                        <span class="w-6 h-6 bg-accent/20 rounded-lg flex items-center justify-center mr-3">
+                            📊
+                        </span>
+                        Performance Statistics
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-text-secondary">Total Rounds</span>
+                            <span class="text-text-primary font-semibold" id="totalRounds">4</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-text-secondary">Wins</span>
+                            <span class="text-success font-semibold" id="totalWins">3</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-text-secondary">Losses</span>
+                            <span class="text-error font-semibold" id="totalLosses">1</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-text-secondary">Draws</span>
+                            <span class="text-accent font-semibold" id="totalDraws">0</span>
+                        </div>
+                        <div class="border-t border-slate-600/50 pt-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-text-secondary">Win Rate</span>
+                                <span class="text-primary font-bold text-lg" id="winRate">75%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Choice History -->
+                <div class="bg-surface/60 backdrop-blur-md rounded-2xl border border-slate-600/50 p-6 shadow-3d">
+                    <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center">
+                        <span class="w-6 h-6 bg-secondary/20 rounded-lg flex items-center justify-center mr-3">
+                            🎯
+                        </span>
+                        Choice History
+                    </h3>
+                    <div class="space-y-3" id="choiceHistory">
+                        <!-- Round 1 -->
+                        <div class="flex items-center justify-between p-3 bg-surface/40 rounded-lg border border-slate-700/30">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-text-muted text-sm">Round 1</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">🪨</span>
+                                    <span class="text-text-muted">vs</span>
+                                    <span class="text-2xl">✂️</span>
+                                </div>
+                            </div>
+                            <span class="text-success text-sm font-semibold">Win</span>
+                        </div>
+                        <!-- Round 2 -->
+                        <div class="flex items-center justify-between p-3 bg-surface/40 rounded-lg border border-slate-700/30">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-text-muted text-sm">Round 2</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">📄</span>
+                                    <span class="text-text-muted">vs</span>
+                                    <span class="text-2xl">🪨</span>
+                                </div>
+                            </div>
+                            <span class="text-success text-sm font-semibold">Win</span>
+                        </div>
+                        <!-- Round 3 -->
+                        <div class="flex items-center justify-between p-3 bg-surface/40 rounded-lg border border-slate-700/30">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-text-muted text-sm">Round 3</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">✂️</span>
+                                    <span class="text-text-muted">vs</span>
+                                    <span class="text-2xl">🪨</span>
+                                </div>
+                            </div>
+                            <span class="text-error text-sm font-semibold">Loss</span>
+                        </div>
+                        <!-- Round 4 -->
+                        <div class="flex items-center justify-between p-3 bg-surface/40 rounded-lg border border-slate-700/30">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-text-muted text-sm">Round 4</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-2xl">🪨</span>
+                                    <span class="text-text-muted">vs</span>
+                                    <span class="text-2xl">✂️</span>
+                                </div>
+                            </div>
+                            <span class="text-success text-sm font-semibold">Win</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center space-y-6">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                    <a href="game_arena.html" class="dimensional-btn px-8 py-4 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-xl font-semibold transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2">
+                        <span>🎮</span>
+                        <span>Play Again</span>
+                    </a>
+                    <button id="newGameBtn" class="dimensional-btn px-8 py-4 bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 rounded-xl font-semibold transition-all duration-200 hover:scale-105 flex items-center justify-center space-x-2">
+                        <span>🆕</span>
+                        <span>New Game</span>
+                    </button>
+                </div>
+                
+                <!-- Match Timestamp -->
+                <div class="text-text-muted text-sm">
+                    Match completed on <span id="matchTimestamp">September 14, 2025 at 2:14 PM</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Credit Attribution -->
+    <footer class="relative z-10 bg-surface/60 backdrop-blur-md border-t border-slate-700/50 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-text-secondary text-sm">
+                    Created by <span class="text-primary font-semibold">Amit Pandey</span> • 
+                    © 2025 Rock Paper Scissors. All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Results Logic Script -->
+    <script>
+        class GameResultsDisplay {
+            constructor() {
+                this.choiceEmojis = {
+                    rock: '🪨',
+                    paper: '📄',
+                    scissors: '✂️'
+                };
+                
+                this.initializeResults();
+            }
+
+            initializeResults() {
+                // Load game results from localStorage or use default
+                const savedResults = localStorage.getItem('gameResults');
+                let gameData;
+
+                if (savedResults) {
+                    gameData = JSON.parse(savedResults);
+                } else {
+                    // Default mock data for demonstration
+                    gameData = {
+                        playerScore: 3,
+                        computerScore: 1,
+                        totalRounds: 4,
+                        winner: 'player',
+                        timestamp: new Date().toISOString(),
+                        rounds: [
+                            { player: 'rock', computer: 'scissors', result: 'win' },
+                            { player: 'paper', computer: 'rock', result: 'win' },
+                            { player: 'scissors', computer: 'rock', result: 'lose' },
+                            { player: 'rock', computer: 'scissors', result: 'win' }
+                        ]
+                    };
+                }
+
+                this.displayResults(gameData);
+                this.setupEventListeners();
+                this.createParticleEffects(gameData.winner);
+                this.animateCounters(gameData);
+            }
+
+            displayResults(gameData) {
+                // Update main result display
+                const winnerText = document.getElementById('winnerText');
+                const winnerMessage = document.getElementById('winnerMessage');
+                const mainResultCard = document.getElementById('mainResultCard');
+                const backgroundContainer = document.getElementById('backgroundContainer');
+
+                if (gameData.winner === 'player') {
+                    winnerText.textContent = '🎉 Victory!';
+                    winnerMessage.textContent = 'Congratulations! You Won the Match!';
+                    winnerText.className = 'text-6xl md:text-8xl font-bold mb-4 transition-all duration-1000 text-success win-animation';
+                    mainResultCard.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                    backgroundContainer.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(245, 158, 11, 0.05))';
+                } else if (gameData.winner === 'computer') {
+                    winnerText.textContent = '💻 Defeat';
+                    winnerMessage.textContent = 'Computer Won This Time!';
+                    winnerText.className = 'text-6xl md:text-8xl font-bold mb-4 transition-all duration-1000 text-error lose-animation';
+                    mainResultCard.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    backgroundContainer.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.05))';
+                } else {
+                    winnerText.textContent = '🤝 Draw';
+                    winnerMessage.textContent = 'Match Ended in a Draw!';
+                    winnerText.className = 'text-6xl md:text-8xl font-bold mb-4 transition-all duration-1000 text-accent draw-animation';
+                    mainResultCard.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                }
+
+                // Update scores
+                document.getElementById('finalPlayerScore').textContent = gameData.playerScore;
+                document.getElementById('finalComputerScore').textContent = gameData.computerScore;
+
+                // Update statistics
+                document.getElementById('totalRounds').textContent = gameData.totalRounds;
+                document.getElementById('totalWins').textContent = gameData.playerScore;
+                document.getElementById('totalLosses').textContent = gameData.computerScore;
+                document.getElementById('totalDraws').textContent = gameData.totalRounds - gameData.playerScore - gameData.computerScore;
+                
+                const winRate = gameData.totalRounds > 0 ? Math.round((gameData.playerScore / gameData.totalRounds) * 100) : 0;
+                document.getElementById('winRate').textContent = `${winRate}%`;
+
+                // Update timestamp
+                const timestamp = new Date(gameData.timestamp);
+                document.getElementById('matchTimestamp').textContent = timestamp.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                // Update choice history
+                this.displayChoiceHistory(gameData.rounds || []);
+
+                // Show winning choice (last winning choice or most frequent)
+                this.displayWinningChoice(gameData);
+            }
+
+            displayChoiceHistory(rounds) {
+                const historyContainer = document.getElementById('choiceHistory');
+                historyContainer.innerHTML = '';
+
+                rounds.forEach((round, index) => {
+                    const roundElement = document.createElement('div');
+                    roundElement.className = 'flex items-center justify-between p-3 bg-surface/40 rounded-lg border border-slate-700/30 opacity-0 transform translate-y-4';
+                    
+                    const resultClass = round.result === 'win' ? 'text-success' : 
+                                       round.result === 'lose' ? 'text-error' : 'text-accent';
+                    const resultText = round.result === 'win' ? 'Win' : 
+                                      round.result === 'lose' ? 'Loss' : 'Draw';
+
+                    roundElement.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="text-text-muted text-sm">Round ${index + 1}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl">${this.choiceEmojis[round.player]}</span>
+                                <span class="text-text-muted">vs</span>
+                                <span class="text-2xl">${this.choiceEmojis[round.computer]}</span>
+                            </div>
+                        </div>
+                        <span class="${resultClass} text-sm font-semibold">${resultText}</span>
+                    `;
+
+                    historyContainer.appendChild(roundElement);
+
+                    // Animate in with delay
+                    setTimeout(() => {
+                        roundElement.style.opacity = '1';
+                        roundElement.style.transform = 'translateY(0)';
+                        roundElement.style.transition = 'all 0.5s ease-out';
+                    }, index * 200);
+                });
+            }
+
+            displayWinningChoice(gameData) {
+                // Find most frequent winning choice or last choice
+                let winningChoice = 'rock'; // default
+                
+                if (gameData.rounds && gameData.rounds.length > 0) {
+                    const winningRounds = gameData.rounds.filter(round => round.result === 'win');
+                    if (winningRounds.length > 0) {
+                        // Get the last winning choice
+                        winningChoice = winningRounds[winningRounds.length - 1].player;
+                    } else {
+                        // Get the last choice if no wins
+                        winningChoice = gameData.rounds[gameData.rounds.length - 1].player;
+                    }
+                }
+
+                document.getElementById('winningChoiceIcon').textContent = this.choiceEmojis[winningChoice];
+            }
+
+            animateCounters(gameData) {
+                // Animate score counters
+                this.animateCounter('finalPlayerScore', 0, gameData.playerScore, 1000);
+                this.animateCounter('finalComputerScore', 0, gameData.computerScore, 1000);
+                
+                // Animate statistics
+                setTimeout(() => {
+                    this.animateCounter('totalRounds', 0, gameData.totalRounds, 800);
+                    this.animateCounter('totalWins', 0, gameData.playerScore, 800);
+                    this.animateCounter('totalLosses', 0, gameData.computerScore, 800);
+                    
+                    const draws = gameData.totalRounds - gameData.playerScore - gameData.computerScore;
+                    this.animateCounter('totalDraws', 0, draws, 800);
+                    
+                    const winRate = gameData.totalRounds > 0 ? Math.round((gameData.playerScore / gameData.totalRounds) * 100) : 0;
+                    this.animateCounter('winRate', 0, winRate, 1000, '%');
+                }, 500);
+            }
+
+            animateCounter(elementId, start, end, duration, suffix = '') {
+                const element = document.getElementById(elementId);
+                const startTime = performance.now();
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.round(start + (end - start) * easeOut);
+                    
+                    element.textContent = current + suffix;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+
+            createParticleEffects(winner) {
+                const particleContainer = document.getElementById('particleContainer');
+                
+                if (winner === 'player') {
+                    // Create victory particles
+                    for (let i = 0; i < 20; i++) {
+                        setTimeout(() => {
+                            this.createParticle(particleContainer, '✨', 'text-success');
+                        }, i * 100);
+                    }
+                } else if (winner === 'computer') {
+                    // Create defeat particles
+                    for (let i = 0; i < 10; i++) {
+                        setTimeout(() => {
+                            this.createParticle(particleContainer, '💔', 'text-error');
+                        }, i * 150);
+                    }
+                }
+            }
+
+            createParticle(container, emoji, colorClass) {
+                const particle = document.createElement('div');
+                particle.textContent = emoji;
+                particle.className = `absolute text-2xl ${colorClass} pointer-events-none`;
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.opacity = '0';
+                
+                container.appendChild(particle);
+                
+                // Animate particle
+                particle.animate([
+                    { opacity: 0, transform: 'translateY(0) scale(0.5)' },
+                    { opacity: 1, transform: 'translateY(-50px) scale(1)' },
+                    { opacity: 0, transform: 'translateY(-100px) scale(0.5)' }
+                ], {
+                    duration: 2000,
+                    easing: 'ease-out'
+                }).onfinish = () => {
+                    particle.remove();
+                };
+            }
+
+            setupEventListeners() {
+                // New Game button
+                document.getElementById('newGameBtn').addEventListener('click', () => {
+                    // Clear saved results
+                    localStorage.removeItem('gameResults');
+                    // Redirect to game arena
+                    window.location.href = 'game_arena.html';
+                });
+
+                // Add floating animation to background elements
+                const floatingElements = document.querySelectorAll('.animate-float');
+                floatingElements.forEach((el, index) => {
+                    el.style.animationDelay = `${index * 0.5}s`;
+                });
+            }
+        }
+
+        // Initialize results display when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new GameResultsDisplay();
+        });
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

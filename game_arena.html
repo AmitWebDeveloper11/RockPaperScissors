@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Arena - Rock Paper Scissors</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="icon" type="image/png" href="public/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2F3drockpa8035back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"></script>
+    <style>
+        /* Custom Properties */
+:root {
+    --background: #0f172a; /* slate-900 */
+    --surface: #1e293b; /* slate-800 */
+    --text-primary: #f1f5f9; /* slate-50 */
+    --text-secondary: #94a3b8; /* slate-400 */
+    --text-muted: #64748b; /* slate-500 */
+    --primary: #4f46e5; /* indigo-600 */
+    --primary-light: #6366f1; /* indigo-500 */
+    --secondary: #a855f7; /* violet-500 */
+    --accent: #f97316; /* orange-500 */
+    --success: #22c55e; /* green-500 */
+    --error: #ef4444; /* red-500 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --transition: all 200ms ease-in-out;
+}
+
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    font-size: clamp(14px, 2vw, 16px); /* Smaller base font size */
+    line-height: 1.4;
+}
+
+/* Background Elements */
+.background-container {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--background), rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.25));
+    z-index: 1;
+}
+
+.background-image {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2825&auto=format&fit=crop&fm=webp');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.08;
+    z-index: 2;
+}
+
+.background-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.4), transparent);
+    z-index: 3;
+}
+
+.animated-element {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(1rem); /* Reduced blur */
+    animation: float 8s ease-in-out infinite;
+}
+
+.animated-element:nth-of-type(1) {
+    background-color: rgba(79, 70, 229, 0.12);
+    width: 10rem; /* Smaller animated elements */
+    height: 10rem;
+    top: 10%;
+    left: 10%;
+}
+
+.animated-element:nth-of-type(2) {
+    background-color: rgba(168, 85, 247, 0.12);
+    width: 8rem;
+    height: 8rem;
+    top: 50%;
+    right: 15%;
+}
+
+.animated-element:nth-of-type(3) {
+    background-color: rgba(249, 115, 22, 0.12);
+    width: 6rem;
+    height: 6rem;
+    bottom: 15%;
+    left: 20%;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.03); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.win-animation {
+    animation: heartbeat 0.5s ease-in-out;
+}
+
+.win-text-animation {
+    color: var(--success);
+    transform: scale(1.05);
+    transition: var(--transition);
+}
+
+.lose-text-animation {
+    color: var(--error);
+    transform: scale(1.05);
+    transition: var(--transition);
+}
+
+.draw-text-animation {
+    color: var(--accent);
+    transform: scale(1.05);
+    transition: var(--transition);
+}
+
+/* Utility Classes */
+.text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-3d {
+    box-shadow: var(--shadow-md), var(--shadow-lg);
+}
+
+/* Navigation Header */
+.navigation-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+}
+
+.navigation-wrapper {
+    max-width: 64rem; /* Reduced max-width */
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 3.5rem; /* Smaller header height */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-icon {
+    width: 1.75rem; /* Smaller logo */
+    height: 1.75rem;
+    background-image: linear-gradient(45deg, var(--primary), var(--secondary));
+    border-radius: 0.5rem;
+}
+
+.logo-title {
+    font-size: clamp(1rem, 2.5vw, 1.25rem); /* Smaller title */
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.navigation-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.results-link {
+    padding: 0.4rem 1rem; /* Smaller padding */
+    background-color: rgba(79, 70, 229, 0.25);
+    color: var(--primary);
+    border-radius: 0.5rem;
+    transition: var(--transition);
+    font-size: clamp(0.75rem, 2vw, 0.875rem); /* Smaller text */
+    font-weight: 500;
+}
+
+.results-link:hover {
+    background-color: rgba(79, 70, 229, 0.35);
+    transform: scale(1.05);
+}
+
+.results-link:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+}
+
+/* Main Game Arena */
+.main-content {
+    position: relative;
+    z-index: 10;
+    padding: 1.5rem 1rem; /* Reduced padding */
+}
+
+.game-wrapper {
+    max-width: 48rem; /* Smaller max-width */
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.game-title-container {
+    text-align: center;
+    margin-bottom: 2rem; /* Reduced margin */
+}
+
+.game-title {
+    font-size: clamp(1.5rem, 4vw, 2rem); /* Smaller title */
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-shadow: var(--shadow-sm);
+}
+
+.game-subtitle {
+    color: var(--text-secondary);
+    font-size: clamp(0.875rem, 2vw, 1rem); /* Smaller subtitle */
+}
+
+/* Score Panel */
+.score-panel {
+    background-color: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(6px);
+    border-radius: 0.75rem; /* Smaller radius */
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    padding: 1rem; /* Reduced padding */
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem; /* Smaller gap */
+    text-align: center;
+}
+
+.score-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.score-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem; /* Smaller text */
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.score-value {
+    font-weight: 700;
+}
+
+.player-score {
+    font-size: clamp(1.25rem, 3vw, 1.5rem); /* Smaller score */
+    color: var(--primary);
+}
+
+.round-number {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: var(--accent);
+}
+
+.computer-score {
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    color: var(--secondary);
+}
+
+/* Game Display Area */
+.game-display-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem; /* Smaller gap */
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .game-display-area {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+    }
+}
+
+.choice-display-container {
+    text-align: center;
+}
+
+.choice-label {
+    font-size: clamp(0.875rem, 2vw, 1rem); /* Smaller label */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.choice-box-wrapper {
+    position: relative;
+    perspective: 800px; /* Slightly smaller perspective */
+}
+
+.choice-box {
+    width: clamp(8rem, 15vw, 9rem); /* Smaller choice box */
+    height: clamp(8rem, 15vw, 9rem);
+    margin: 0 auto;
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(6px);
+    border-radius: 1rem;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.choice-box:hover {
+    transform: translateZ(15px);
+}
+
+.choice-icon {
+    font-size: clamp(2.5rem, 6vw, 3rem); /* Smaller icon */
+    opacity: 0.6;
+    transition: var(--transition);
+}
+
+.choice-image-display {
+    width: clamp(4rem, 10vw, 5rem); /* Smaller image */
+    height: clamp(4rem, 10vw, 5rem);
+    object-fit: contain;
+}
+
+.choice-glow {
+    position: absolute;
+    inset: -0.5rem;
+    border-radius: 1rem;
+    filter: blur(1rem);
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+}
+
+.choice-box:hover .choice-glow {
+    opacity: 0.5;
+}
+
+.player-glow {
+    background-color: rgba(79, 70, 229, 0.25);
+}
+
+.computer-glow {
+    background-color: rgba(168, 85, 247, 0.25);
+}
+
+/* Game Status */
+.game-status-container {
+    text-align: center;
+    margin-bottom: 2rem; /* Reduced margin */
+}
+
+.game-status-main {
+    font-size: clamp(1rem, 2.5vw, 1.25rem); /* Smaller status text */
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    min-height: 1.5rem;
+    transition: var(--transition);
+}
+
+.game-status-message {
+    color: var(--text-secondary);
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+    min-height: 1rem;
+    transition: var(--transition);
+}
+
+/* Choice Buttons */
+.choice-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem; /* Smaller gap */
+    max-width: 48rem;
+    margin: 0 auto 2rem auto;
+}
+
+@media (min-width: 640px) {
+    .choice-buttons-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+.choice-btn {
+    position: relative;
+    padding: 1rem; /* Reduced padding */
+    border-radius: 0.75rem;
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    background-color: rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.choice-btn:hover {
+    transform: translateY(-0.15rem) scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+.choice-btn:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+}
+
+.choice-btn-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Smaller gap */
+}
+
+.choice-image {
+    width: clamp(4rem, 10vw, 5rem); /* Smaller image */
+    height: clamp(4rem, 10vw, 5rem);
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.choice-name {
+    font-size: clamp(0.875rem, 2vw, 1rem); /* Smaller text */
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.choice-description {
+    font-size: clamp(0.625rem, 1.5vw, 0.75rem); /* Smaller description */
+    color: var(--text-secondary);
+}
+
+.choice-btn-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(135deg, rgba(71, 85, 105, 0.25), transparent);
+    border-radius: 0.75rem;
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+}
+
+.choice-btn:hover .choice-btn-overlay,
+.choice-btn:focus .choice-btn-overlay {
+    opacity: 1;
+}
+
+/* Game Controls */
+.game-controls {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Smaller gap */
+    margin-bottom: 1.5rem;
+}
+
+.reset-button {
+    padding: 0.5rem 2rem; /* Smaller padding */
+    background-color: rgba(249, 115, 22, 0.25);
+    color: var(--accent);
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    border-radius: 0.5rem;
+    font-size: clamp(0.75rem, 2vw, 0.875rem); /* Smaller text */
+    font-weight: 600;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.reset-button:hover {
+    background-color: rgba(249, 115, 22, 0.35);
+    transform: scale(1.05);
+}
+
+.reset-button:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.game-info {
+    font-size: clamp(0.625rem, 1.5vw, 0.75rem); /* Smaller text */
+    color: var(--text-muted);
+}
+
+/* Footer */
+.game-footer {
+    position: relative;
+    z-index: 10;
+    background-color: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(71, 85, 105, 0.4);
+    padding: 1rem 0; /* Reduced padding */
+}
+
+.footer-wrapper {
+    max-width: 64rem; /* Smaller max-width */
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-text {
+    color: var(--text-secondary);
+    font-size: clamp(0.625rem, 1.5vw, 0.75rem); /* Smaller text */
+}
+
+.creator-name {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Additional Responsive Adjustments */
+@media (max-width: 640px) {
+    .navigation-wrapper {
+        flex-direction: column;
+        height: auto;
+        padding: 0.75rem;
+    }
+
+    .navigation-links {
+        margin-top: 0.75rem;
+    }
+
+    .score-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .choice-box {
+        width: clamp(6rem, 20vw, 7rem); /* Smaller choice box for mobile */
+        height: clamp(6rem, 20vw, 7rem);
+    }
+
+    .choice-image {
+        width: clamp(3rem, 8vw, 4rem);
+        height: clamp(3rem, 8vw, 4rem);
+    }
+}
+
+@media (min-width: 1280px) {
+    .game-wrapper {
+        max-width: 64rem;
+    }
+
+    .choice-buttons-grid {
+        max-width: 64rem;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .animated-element,
+    .choice-btn,
+    .reset-button,
+    .results-link {
+        animation: none;
+        transition: none;
+    }
+}
+
+/* --- MOBILE PLAYABILITY IMPROVEMENTS --- */
+@media (max-width: 768px) {
+    body {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .game-wrapper {
+        padding: 0.75rem;
+    }
+
+    /* Center title and tighten spacing */
+    .game-title {
+        font-size: 1.5rem;
+    }
+
+    .game-subtitle {
+        font-size: 0.875rem;
+        margin-top: -0.25rem;
+    }
+
+    /* Better spacing and tap-friendly buttons */
+    .choice-buttons-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .choice-btn {
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+    }
+
+    .choice-image {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    .choice-name {
+        font-size: 0.875rem;
+    }
+
+    /* Make score section more compact but readable */
+    .score-panel {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .score-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .score-label {
+        font-size: 0.7rem;
+    }
+
+    .player-score,
+    .computer-score {
+        font-size: 1.25rem;
+    }
+
+    /* Game display area stack nicely */
+    .game-display-area {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .choice-box {
+        width: 6rem;
+        height: 6rem;
+        border-radius: 0.75rem;
+    }
+
+    .choice-image-display {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    /* Game status looks cleaner */
+    .game-status-main {
+        font-size: 1rem;
+        min-height: 1.25rem;
+    }
+
+    .game-status-message {
+        font-size: 0.75rem;
+    }
+
+    /* Reset button larger for touch */
+    .reset-button {
+        padding: 0.65rem 1.75rem;
+        font-size: 0.9rem;
+        border-radius: 0.6rem;
+    }
+
+    /* Footer text smaller, centered */
+    .footer-text {
+        font-size: 0.7rem;
+    }
+
+    /* Navigation compact and clean */
+    .navigation-wrapper {
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .navigation-links {
+        gap: 0.75rem;
+    }
+
+    .results-link {
+        padding: 0.35rem 0.85rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* --- ULTRA SMALL SCREENS (max 400px) --- */
+@media (max-width: 400px) {
+    .choice-buttons-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .choice-btn {
+        padding: 0.6rem;
+    }
+
+    .choice-image {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .score-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .reset-button {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.8rem;
+    }
+
+    .game-title {
+        font-size: 1.25rem;
+    }
+}
+    </style>
+</head>
+<body class="min-h-screen bg-background overflow-x-hidden">
+    <div class="background-container">
+        <div class="background-image"></div>
+        <div class="background-overlay"></div>
+        <div class="animated-element"></div>
+        <div class="animated-element"></div>
+        <div class="animated-element"></div>
+    </div>
+
+    <nav class="navigation-header">
+        <div class="navigation-wrapper">
+            <div class="flex items-center space-x-2">
+                <div class="logo-icon"></div>
+                <h1 class="logo-title">Rock Paper Scissors</h1>
+            </div>
+            <div class="navigation-links">
+                <a href="game_results.html" class="results-link">Results</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+        <audio id="bgmAudio" loop>
+            <source src="public/sounds/bgm.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        <audio id="winAudio">
+            <source src="public/sounds/win.mp3" type="audio/mp3">
+        </audio>
+        <audio id="loseAudio">
+            <source src="public/sounds/lose.mp3" type="audio/mp3">
+        </audio>
+        <audio id="drawAudio">
+            <source src="public/sounds/draw.mp3" type="audio/mp3">
+        </audio>
+        <audio id="clickAudio">
+            <source src="public/sounds/click.mp3" type="audio/mp3">
+        </audio>
+        <div class="game-wrapper">
+            <div class="game-title-container">
+                <h2 class="game-title">Game Arena</h2>
+                <p class="game-subtitle">Choose your weapon and battle the AI!</p>
+            </div>
+
+            <div class="score-panel">
+                <div class="score-grid">
+                    <div class="score-item">
+                        <h3 class="score-label">Player</h3>
+                        <div class="score-value player-score" id="playerScore">0</div>
+                    </div>
+                    <div class="score-item">
+                        <h3 class="score-label">Round</h3>
+                        <div class="score-value round-number" id="roundNumber">1</div>
+                    </div>
+                    <div class="score-item">
+                        <h3 class="score-label">Computer</h3>
+                        <div class="score-value computer-score" id="computerScore">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-display-area">
+                <div class="choice-display-container">
+                    <h3 class="choice-label">Your Choice</h3>
+                    <div class="choice-box-wrapper">
+                        <div id="playerChoiceDisplay" class="choice-box">
+                            <div class="choice-icon" id="playerChoiceIcon">❓</div>
+                        </div>
+                        <div class="choice-glow player-glow" id="playerGlow"></div>
+                    </div>
+                </div>
+
+                <div class="choice-display-container">
+                    <h3 class="choice-label">Computer's Choice</h3>
+                    <div class="choice-box-wrapper">
+                        <div id="computerChoiceDisplay" class="choice-box">
+                            <div class="choice-icon" id="computerChoiceIcon">❓</div>
+                        </div>
+                        <div class="choice-glow computer-glow" id="computerGlow"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-status-container">
+                <div id="gameStatus" class="game-status-main">Make your choice!</div>
+                <div id="gameMessage" class="game-status-message"></div>
+            </div>
+
+            <div class="choice-buttons-grid">
+                <button id="rockBtn" class="choice-btn" data-choice="rock">
+                    <div class="choice-btn-content">
+                        <img src="public/images/rock.png" alt="Rock" class="choice-image">
+                        <div class="choice-name">Rock</div>
+                        <div class="choice-description">Crushes Scissors</div>
+                    </div>
+                    <div class="choice-btn-overlay"></div>
+                </button>
+
+                <button id="paperBtn" class="choice-btn" data-choice="paper">
+                    <div class="choice-btn-content">
+                        <img src="public/images/paper.png" alt="Paper" class="choice-image">
+                        <div class="choice-name">Paper</div>
+                        <div class="choice-description">Covers Rock</div>
+                    </div>
+                    <div class="choice-btn-overlay"></div>
+                </button>
+
+                <button id="scissorsBtn" class="choice-btn" data-choice="scissors">
+                    <div class="choice-btn-content">
+                        <img src="public/images/seccior.png" alt="Scissors" class="choice-image">
+                        <div class="choice-name">Scissors</div>
+                        <div class="choice-description">Cuts Paper</div>
+                    </div>
+                    <div class="choice-btn-overlay"></div>
+                </button>
+            </div>
+
+            <div class="game-controls">
+                <button id="resetBtn" class="reset-button">Reset Game</button>
+                <div class="game-info">Best of 5 rounds • First to 3 wins!</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="game-footer">
+        <div class="footer-wrapper">
+            <div class="footer-content">
+                <p class="footer-text">
+                    Created by <span class="creator-name">Amit Pandey</span> • 
+                    © 2025 Rock Paper Scissors. All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        class RockPaperScissorsGame {
+            constructor() {
+                this.playerScore = 0;
+                this.computerScore = 0;
+                this.round = 1;
+                this.maxRounds = 5;
+                this.gameActive = true;
+                this.choices = ['rock', 'paper', 'scissors'];
+                this.choiceImages = {
+                    rock: 'public/images/rock.png',
+                    paper: 'public/images/paper.png',
+                    scissors: 'public/images/seccior.png' 
+                };
+                
+                this.initializeGame();
+            }
+
+            initializeGame() {
+                this.playerScoreEl = document.getElementById('playerScore');
+                this.computerScoreEl = document.getElementById('computerScore');
+                this.roundNumberEl = document.getElementById('roundNumber');
+                this.gameStatusEl = document.getElementById('gameStatus');
+                this.gameMessageEl = document.getElementById('gameMessage');
+                this.playerChoiceDisplayEl = document.getElementById('playerChoiceDisplay');
+                this.computerChoiceDisplayEl = document.getElementById('computerChoiceDisplay');
+                this.playerChoiceIconEl = document.getElementById('playerChoiceIcon');
+                this.computerChoiceIconEl = document.getElementById('computerChoiceIcon');
+                this.playerGlowEl = document.getElementById('playerGlow');
+                this.computerGlowEl = document.getElementById('computerGlow');
+
+                // 🎧 Audio element initialization
+                this.bgmAudio = document.getElementById('bgmAudio');
+                this.winAudio = document.getElementById('winAudio');
+                this.loseAudio = document.getElementById('loseAudio');
+                this.drawAudio = document.getElementById('drawAudio');
+                this.clickAudio = document.getElementById('clickAudio');
+                
+                // Event Listeners (updated to include click sound)
+                document.getElementById('rockBtn').addEventListener('click', () => { this.playAudio('click'); this.playRound('rock'); });
+                document.getElementById('paperBtn').addEventListener('click', () => { this.playAudio('click'); this.playRound('paper'); });
+                document.getElementById('scissorsBtn').addEventListener('click', () => { this.playAudio('click'); this.playRound('scissors'); });
+                document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
+
+                this.updateDisplay();
+                this.startBGM(); // Start background music
+            }
+
+            // 🎧 Audio Play Method
+            playAudio(audioId) {
+                let audioEl;
+                switch(audioId) {
+                    case 'win': audioEl = this.winAudio; break;
+                    case 'lose': audioEl = this.loseAudio; break;
+                    case 'draw': audioEl = this.drawAudio; break;
+                    case 'click': audioEl = this.clickAudio; break;
+                    default: return;
+                }
+                
+                // Reset and play the sound
+                if (audioEl) {
+                    audioEl.currentTime = 0;
+                    audioEl.play().catch(error => console.log("Audio play failed:", audioId, error));
+                }
+            }
+
+            // 🎧 Background Music Start
+            startBGM() {
+                if (this.bgmAudio) {
+                    this.bgmAudio.volume = 0.4;
+                    // Attempt to play BGM, catch if autoplay is blocked
+                    this.bgmAudio.play().catch(error => {
+                        console.log("BGM Autoplay blocked. It will start after the first click.");
+                        // Fallback: Start BGM on the first choice button click
+                        document.querySelectorAll('.choice-btn').forEach(btn => {
+                            const handler = () => {
+                                if (this.bgmAudio && this.bgmAudio.paused) {
+                                    this.bgmAudio.play().catch(e => console.log("BGM play failed after click:", e));
+                                }
+                                btn.removeEventListener('click', handler); // Remove listener after successful play/attempt
+                            };
+                            btn.addEventListener('click', handler, { once: true });
+                        });
+                    });
+                }
+            }
+
+            async playRound(playerChoice) {
+                if (!this.gameActive) return;
+
+                this.setButtonsEnabled(false);
+
+                const computerChoice = this.choices[Math.floor(Math.random() * this.choices.length)];
+
+                await this.revealChoices(playerChoice, computerChoice);
+
+                const result = this.determineWinner(playerChoice, computerChoice);
+
+                if (result === 'player') {
+                    this.playerScore++;
+                    this.showResult('You Win!', 'win');
+                    this.playAudio('win'); // 🎧 Play win sound
+                } else if (result === 'computer') {
+                    this.computerScore++;
+                    this.showResult('Computer Wins!', 'lose');
+                    this.playAudio('lose'); // 🎧 Play lose sound
+                } else {
+                    this.showResult("It's a Draw!", 'draw');
+                    this.playAudio('draw'); // 🎧 Play draw sound
+                }
+
+                this.updateDisplay();
+
+                if (this.playerScore >= 3 || this.computerScore >= 3 || this.round >= this.maxRounds) {
+                    this.endGame();
+                } else {
+                    this.round++;
+                    setTimeout(() => {
+                        this.resetChoiceDisplays();
+                        this.setButtonsEnabled(true);
+                        this.gameStatusEl.textContent = 'Make your choice!';
+                        this.gameMessageEl.textContent = '';
+                    }, 2000); 
+                }
+            }
+
+            async revealChoices(playerChoice, computerChoice) {
+                this.gameStatusEl.textContent = 'Revealing choices...';
+                
+                this.playerChoiceDisplayEl.style.transform = 'rotateY(360deg) scale(1.05)';
+                this.computerChoiceDisplayEl.style.transform = 'rotateY(-360deg) scale(1.05)';
+
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                this.playerChoiceIconEl.innerHTML = '';
+                this.computerChoiceIconEl.innerHTML = '';
+
+                const playerImg = document.createElement('img');
+                playerImg.src = this.choiceImages[playerChoice];
+                playerImg.alt = playerChoice;
+                playerImg.className = 'choice-image-display';
+                this.playerChoiceIconEl.appendChild(playerImg);
+
+                const computerImg = document.createElement('img');
+                computerImg.src = this.choiceImages[computerChoice];
+                computerImg.alt = computerChoice;
+                computerImg.className = 'choice-image-display';
+                this.computerChoiceIconEl.appendChild(computerImg);
+                
+                this.playerGlowEl.style.opacity = '1';
+                this.computerGlowEl.style.opacity = '1';
+
+                this.playerChoiceDisplayEl.style.transform = 'rotateY(0deg) scale(1)';
+                this.computerChoiceDisplayEl.style.transform = 'rotateY(0deg) scale(1)';
+            }
+
+            determineWinner(playerChoice, computerChoice) {
+                if (playerChoice === computerChoice) return 'draw';
+                
+                const winConditions = {
+                    rock: 'scissors',
+                    paper: 'rock',
+                    scissors: 'paper'
+                };
+
+                return winConditions[playerChoice] === computerChoice ? 'player' : 'computer';
+            }
+
+            showResult(message, type) {
+                this.gameStatusEl.textContent = message;
+                
+                if (type === 'win') {
+                    this.gameStatusEl.className = 'game-status-main win-text-animation';
+                    this.gameMessageEl.textContent = 'Excellent choice!';
+                    this.playerChoiceDisplayEl.classList.add('win-animation');
+                } else if (type === 'lose') {
+                    this.gameStatusEl.className = 'game-status-main lose-text-animation';
+                    this.gameMessageEl.textContent = 'Better luck next time!';
+                    this.computerChoiceDisplayEl.classList.add('win-animation');
+                } else {
+                    this.gameStatusEl.className = 'game-status-main draw-text-animation';
+                    this.gameMessageEl.textContent = 'Great minds think alike!';
+                }
+
+                setTimeout(() => {
+                    this.gameStatusEl.className = 'game-status-main';
+                    this.playerChoiceDisplayEl.classList.remove('win-animation');
+                    this.computerChoiceDisplayEl.classList.remove('win-animation');
+                }, 1000); 
+            }
+
+            updateDisplay() {
+                this.playerScoreEl.textContent = this.playerScore;
+                this.computerScoreEl.textContent = this.computerScore;
+                this.roundNumberEl.textContent = this.round;
+            }
+
+            resetChoiceDisplays() {
+                this.playerChoiceIconEl.innerHTML = '<div class="choice-icon">❓</div>';
+                this.computerChoiceIconEl.innerHTML = '<div class="choice-icon">❓</div>';
+                this.playerGlowEl.style.opacity = '0';
+                this.computerGlowEl.style.opacity = '0';
+            }
+
+            setButtonsEnabled(enabled) {
+                const buttons = document.querySelectorAll('.choice-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = !enabled;
+                    btn.style.opacity = enabled ? '1' : '0.6';
+                    btn.style.pointerEvents = enabled ? 'auto' : 'none';
+                });
+            }
+
+            endGame() {
+                this.gameActive = false;
+                this.setButtonsEnabled(false);
+
+                if (this.bgmAudio) this.bgmAudio.pause(); // Pause BGM
+
+                let finalMessage = '';
+                if (this.playerScore > this.computerScore) {
+                    finalMessage = '🎉 Congratulations! You Won!';
+                    this.gameStatusEl.className = 'game-status-main win-text-animation';
+                    this.playAudio('win'); 
+                } else if (this.computerScore > this.playerScore) {
+                    finalMessage = '💻 Computer Wins!';
+                    this.gameStatusEl.className = 'game-status-main lose-text-animation';
+                    this.playAudio('lose');
+                } else {
+                    finalMessage = '🤝 Draw!';
+                    this.gameStatusEl.className = 'game-status-main draw-text-animation';
+                    this.playAudio('draw');
+                }
+
+                this.gameStatusEl.textContent = finalMessage;
+                this.gameMessageEl.textContent = 'Click Reset to play again!';
+
+                localStorage.setItem('gameResults', JSON.stringify({
+                    playerScore: this.playerScore,
+                    computerScore: this.computerScore,
+                    totalRounds: this.round,
+                    winner: this.playerScore > this.computerScore ? 'player' : 
+                               this.computerScore > this.playerScore ? 'computer' : 'draw',
+                    timestamp: new Date().toISOString()
+                }));
+            }
+
+            resetGame() {
+                this.playerScore = 0;
+                this.computerScore = 0;
+                this.round = 1;
+                this.gameActive = true;
+                
+                this.updateDisplay();
+                this.resetChoiceDisplays();
+                this.setButtonsEnabled(true);
+                
+                this.gameStatusEl.textContent = 'Make your choice!';
+                this.gameStatusEl.className = 'game-status-main';
+                this.gameMessageEl.textContent = '';
+
+                this.startBGM(); // Restart BGM
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new RockPaperScissorsGame();
+        });
+    </script>
+</body>
+</html>
